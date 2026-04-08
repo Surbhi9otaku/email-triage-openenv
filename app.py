@@ -1,25 +1,47 @@
-import streamlit as st
-from env import EmailEnv
-from models import EmailAction
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-env = EmailEnv()
+# Try importing your env safely
+try:
+    from env import EmailEnv
+    env = EmailEnv()
+except:
+    env = None
 
-if "email" not in st.session_state:
-    st.session_state.email = env.reset()
+app = FastAPI()
 
-st.title("Email Triage System")
+# Dummy action model (for /step)
+class Action(BaseModel):
+    response: str = "test"
 
-st.write("Email:", st.session_state.email)
+@app.get("/")
+def home():
+    return {"status": "running"}
 
-response = st.text_input("Your response")
+@app.get("/reset")
+def reset():
+    if env:
+        try:
+            state = env.reset()
+            return {"state": state}
+        except Exception as e:
+            return {"error": str(e)}
+    return {"state": "env not loaded"}
 
-if st.button("Submit"):
-    action = EmailAction(response=response)
-    email, reward, done, _ = env.step(action)
-
-    st.write("Reward:", reward)
-
-    if done:
-        st.write("Finished!")
-    else:
-        st.session_state.email = email
+@app.post("/step")
+def step(action: Action):
+    if env:
+        try:
+            next_state, reward, done, info = env.step(action)
+            return {
+                "next_state": next_state,
+                "reward": reward,
+                "done": done
+            }
+        except Exception as e:
+            return {"error": str(e)}
+    return {
+        "next_state": "dummy",
+        "reward": 0.5,
+        "done": False
+    }
