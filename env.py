@@ -1,5 +1,7 @@
 from tasks import tasks
 from models import EmailAction
+from grader import grade
+
 
 class EmailEnv:
     def __init__(self):
@@ -13,11 +15,18 @@ class EmailEnv:
         task = tasks[self.current]
         correct = task["answer"]
 
-        if action.response == correct:
-            reward = 1.0
-        else:
+        # grading (smart reward)
+        reward = grade(task["type"], action.response, correct)
+
+        # penalty for wrong answer
+        if reward == 0:
             reward = -0.5
 
+        # penalty for very short / useless answers
+        if len(action.response.strip()) < 3:
+            reward -= 0.2
+
+        # move to next task
         self.current += 1
         done = self.current >= len(tasks)
 

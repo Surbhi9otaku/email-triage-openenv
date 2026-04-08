@@ -1,0 +1,16 @@
+name: email-triage-env
+description: RL environment for email classification (spam/work/reply)
+
+entry_point: run.py
+
+actions:
+  - name: response
+    type: string
+    description: classify email (spam, work, important, etc.)
+
+observations:
+  - name: email
+    type: string
+    description: input email text
+
+reward: float

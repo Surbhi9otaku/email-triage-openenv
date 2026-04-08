@@ -7,7 +7,7 @@ email = env.reset()
 
 while True:
     print("\nEmail:", email)
-
+    
     user_input = input("Your response: ")
     action = EmailAction(response=user_input)
 
