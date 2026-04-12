@@ -1,26 +1,47 @@
-import gradio as gr
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-def process_email(email):
-    if "urgent" in email.lower():
-        category = "Important"
-        reply = "This looks urgent. I will respond shortly."
-    elif "meeting" in email.lower():
-        category = "Work"
-        reply = "Noted. I will check my schedule and reply."
-    else:
-        category = "General"
-        reply = "Thanks for your email. I will get back to you."
+app = FastAPI()
 
-    return f"Category: {category}\nReply: {reply}"
+# Global state
+state = {"step": 0}
 
-with gr.Blocks() as demo:
-    gr.Markdown("## 📧 Email Triage App")
+# Request model
+class Action(BaseModel):
+    action: str
 
-    email_input = gr.Textbox(label="Enter Email", lines=5)
-    output = gr.Textbox(label="Result")
+# Root endpoint (for testing)
+@app.get("/")
+def home():
+    return {"message": "API is running 🚀"}
 
-    btn = gr.Button("Analyze Email")
+# Reset environment
+@app.post("/reset")
+def reset():
+    global state
+    state = {"step": 0}
+    return {
+        "message": "reset done",
+        "state": state
+    }
 
-    btn.click(fn=process_email, inputs=email_input, outputs=output)
+# Step function
+@app.post("/step")
+def step(action: Action):
+    global state
+    state["step"] += 1
 
-demo.launch(server_name="0.0.0.0", server_port=7860)
+    # Simple reward logic
+    reward = 1.0 if action.action.lower() == "correct" else 0.0
+    done = state["step"] >= 3
+
+    return {
+        "state": state,
+        "reward": reward,
+        "done": done
+    }
+
+# Get current state
+@app.get("/state")
+def get_state():
+    return state

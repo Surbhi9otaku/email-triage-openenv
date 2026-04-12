@@ -1,0 +1,16 @@
+[project]
+name = "email-triage-openenv"
+version = "0.1.0"
+description = "Email triage RL environment"
+authors = [
+  { name="Surbhi Kumari" }
+]
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "requests"
+]
+
+[tool.setuptools]
+packages = ["."]
