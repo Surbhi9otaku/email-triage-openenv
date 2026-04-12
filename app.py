@@ -1,15 +1,12 @@
-from fastapi import FastAPI
+import gradio as gr
 
-app = FastAPI()
+def greet():
+    return "App running successfully 🚀"
 
-@app.get("/")
-def home():
-    return {"status": "ok"}
+iface = gr.Interface(
+    fn=greet,
+    inputs=[],
+    outputs="text"
+)
 
-@app.post("/reset")
-def reset():
-    return {"state": "ok"}
-
-@app.post("/step")
-def step():
-    return {"next_state": "ok", "reward": 0.5, "done": False}
+iface.launch()
