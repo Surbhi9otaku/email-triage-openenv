@@ -1,17 +1,26 @@
-from fastapi import FastAPI
+import gradio as gr
 
-app = FastAPI()
+def process_email(email):
+    if "urgent" in email.lower():
+        category = "Important"
+        reply = "This looks urgent. I will respond shortly."
+    elif "meeting" in email.lower():
+        category = "Work"
+        reply = "Noted. I will check my schedule and reply."
+    else:
+        category = "General"
+        reply = "Thanks for your email. I will get back to you."
 
-@app.get("/")
-def health():
-    return {"status": "ok"}
+    return f"Category: {category}\nReply: {reply}"
 
+with gr.Blocks() as demo:
+    gr.Markdown("## 📧 Email Triage App")
 
-# REQUIRED by OpenEnv validator
-def main():
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    email_input = gr.Textbox(label="Enter Email", lines=5)
+    output = gr.Textbox(label="Result")
 
+    btn = gr.Button("Analyze Email")
 
-if __name__ == "__main__":
-    main()
+    btn.click(fn=process_email, inputs=email_input, outputs=output)
+
+demo.launch(server_name="0.0.0.0", server_port=7860)
