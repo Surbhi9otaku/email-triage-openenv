@@ -1,9 +1,30 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Action(BaseModel):
+    action: str = "test"
+
+@app.get("/")
+def home():
+    return {"status": "ok"}
+
 @app.post("/reset")
 def reset():
-    if env:
-        try:
-            state = env.reset()
-            return {"state": state}
-        except Exception as e:
-            return {"error": str(e)}
-    return {"state": "env not loaded"}
+    return {
+        "state": {
+            "email": "sample email",
+            "category": "general"
+        }
+    }
+
+@app.post("/step")
+def step(action: Action):
+    return {
+        "next_state": {
+            "email": "processed email"
+        },
+        "reward": 0.5,
+        "done": False
+    }
