@@ -1,10 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 
 app = FastAPI()
-
-class Action(BaseModel):
-    action: str = "test"
 
 @app.get("/")
 def home():
@@ -12,19 +8,8 @@ def home():
 
 @app.post("/reset")
 def reset():
-    return {
-        "state": {
-            "email": "sample email",
-            "category": "general"
-        }
-    }
+    return {"state": "ok"}
 
 @app.post("/step")
-def step(action: Action):
-    return {
-        "next_state": {
-            "email": "processed email"
-        },
-        "reward": 0.5,
-        "done": False
-    }
+def step():
+    return {"next_state": "ok", "reward": 0.5, "done": False}
