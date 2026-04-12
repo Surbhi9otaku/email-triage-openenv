@@ -2,15 +2,22 @@
 name = "email-triage-openenv"
 version = "0.1.0"
 description = "Email triage RL environment"
+requires-python = ">=3.10,<3.12"
+
 authors = [
   { name="Surbhi Kumari" }
 ]
+
 dependencies = [
   "fastapi",
   "uvicorn",
   "pydantic",
-  "requests"
+  "requests",
+  "openenv-core>=0.2.0"
 ]
 
+[project.scripts]
+server = "server.app:main"
+
 [tool.setuptools]
-packages = ["."]
+packages = ["server"]
